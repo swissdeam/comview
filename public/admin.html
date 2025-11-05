@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+</head>
+<body>
+  <h1>Админ-панель</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="video" accept="video/*" required>
+    <button type="submit">Загрузить видео</button>
+  </form>
+
+  <h2>Подключенные пользователи</h2>
+  <ul id="userList"></ul>
+
+  <video id="player" width="720" controls></video>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/client.js"></script>
+</body>
+</html>
