@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>comview</title>
+  <meta charset="utf-8" />
+  <title>Comview — Зритель</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <h1>🎬 Совместный просмотр</h1>
-  <video id="player" width="720" controls></video>
+  <div class="meta card" id="metaBox">
+    <h2 id="metaTitle">—</h2>
+    <p id="metaDesc" class="small">—</p>
+    <div class="small">Организатор: <span id="metaStreamer">—</span></div>
+    <div class="small">Количество зрителей: <span id="metaViewers">0</span></div>
+  </div>
+
+  <video id="viewerPlayer" playsinline></video>
+
+  <div class="viewer-ui">
+    <div style="display:flex;justify-content:center;">
+      <div class="controls card">
+        <button id="playPauseBtn" class="btn">Play</button>
+        <div class="small">Показ в реальном времени, пауза - только для вас</div>
+      </div>
+    </div>
+  </div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/client.js"></script>
 </body>

@@ -1,20 +1,74 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel</title>
+  <meta charset="utf-8" />
+  <title>Comview</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <h1>Админ-панель</h1>
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="video" accept="video/*" required>
-    <button type="submit">Загрузить видео</button>
-  </form>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <span class="logo"></span>
+        <div>
+          <div style="font-weight:700">Comview - организатор</div>
+          <div class="small">Вы аворизованы</div>
+        </div>
+      </div>
+      <form action="/logout" method="post">
+        <button class="btn" type="submit">Выйти</button>
+      </form>
+    </div>
 
-  <h2>Подключенные пользователи</h2>
-  <ul id="userList"></ul>
+    <div class="row" style="margin-top:16px">
+      <div class="col card admin-panel">
+        <h3>Управление показом</h3>
+        <video id="adminPlayer" controls></video>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="adminPlay" class="btn">Play</button>
+          <button id="adminPause" class="btn">Pause</button>
+          <button id="adminSeek30" class="btn">+30s</button>
+          <button id="adminSeek-30" class="btn">-30s</button>
+        </div>
 
-  <video id="player" width="720" controls></video>
+        <h3 style="margin-top:12px">Загрузить новый материал для показа</h3>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          <input class="input" type="file" name="video" accept="video/*" required />
+          <div style="margin-top:8px"><button class="btn" type="submit">Начать стрим</button></div>
+        </form>
+
+        <h3 style="margin-top:12px">Дополнительно</h3>
+        <form id="metaForm" style="display:flex;flex-direction:column;gap:8px">
+          <input class="input" id="metaTitleIn" placeholder="Название" />
+          <textarea id="metaDescIn" class="input" placeholder="Описание"></textarea>
+          <input class="input" id="metaStreamerIn" placeholder="Организатор" />
+          <div style="display:flex;gap:8px">
+            <button class="btn" type="button" id="saveMeta">Save meta</button>
+            <button class="btn ghost" type="button" id="clearMeta">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div style="width:340px" class="card">
+        <h3>Оганизаторы</h3>
+        <div>
+          <form id="addAdminForm" style="display:flex;flex-direction:column;gap:8px">
+            <input class="input" name="id" placeholder="Логин" required />
+            <input class="input" name="password" placeholder="Пароль" required />
+            <input class="input" name="displayName" placeholder="Отображаемое Имя" />
+            <button class="btn" type="submit">Добавить организатора</button>
+          </form>
+          <h4 style="margin-top:12px">Существующие</h4>
+          <ul id="adminList" class="list"></ul>
+        </div>
+
+        <h3 style="margin-top:12px">Показ - информация</h3>
+        <div class="small">Название: <span id="metaTitleSmall">—</span></div>
+        <div class="small">Количество зрителей: <span id="metaViewers">0</span></div>
+      </div>
+    </div>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/client.js"></script>

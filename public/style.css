@@ -1,0 +1,39 @@
+:root{
+  --bg:#0b0f14;
+  --panel:#0f1519;
+  --muted:#9aa6b2;
+  --accent:#7dd3fc;
+  --glass: rgba(255,255,255,0.04);
+}
+*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#e6eef3}
+body{margin:0;background:linear-gradient(180deg,#050608 0%,var(--bg) 100%);min-height:100vh}
+.container{max-width:1100px;margin:24px auto;padding:16px}
+.header{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:600;display:flex;gap:12px;align-items:center}
+.brand .logo{width:36px;height:36px;background:linear-gradient(90deg,#0ea5e9,#7c3aed);border-radius:8px;display:inline-block}
+.card{background:var(--panel);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
+.row{display:flex;gap:16px;align-items:flex-start}
+.col{flex:1}
+.small{font-size:13px;color:var(--muted)}
+.viewer-ui{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;padding:20px;pointer-events:none}
+.controls{pointer-events:auto;display:flex;align-items:center;gap:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:10px;border-radius:10px}
+.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--accent);cursor:pointer}
+.btn.ghost{border-color:transparent;color:var(--muted)}
+.meta{position:fixed;top:16px;left:16px;background:var(--glass);padding:12px;border-radius:10px;min-width:260px}
+.meta h2{margin:0 0 6px 0;font-size:18px}
+.meta p{margin:0 0 8px 0;color:var(--muted);font-size:13px}
+.admin-panel{display:flex;flex-direction:column;gap:12px}
+.form-row{display:flex;gap:8px;align-items:center}
+.input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;color:inherit}
+textarea{min-height:80px}
+.hidden{display:none}
+.center{display:flex;align-items:center;justify-content:center}
+.viewer-count{font-weight:600;color:var(--accent)}
+/* ensure video covers full screen */
+video#viewerPlayer{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:black}
+/* admin video small */
+video#adminPlayer{width:100%;height:480px;object-fit:contain;background:black}
+.login-box{max-width:420px;margin:80px auto;padding:20px;border-radius:12px}
+.list{list-style:none;padding:0;margin:0}
+.list li{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.footer-small{font-size:12px;color:var(--muted);text-align:center;margin-top:16px}
