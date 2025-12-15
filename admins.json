@@ -1,20 +1,9 @@
 {
   "admins": [
     {
-      "id": "swissdeam",
-      "passwordHash": "$2b$10$P...FVrohR.wmG7VTU/KIOBfC6V9xQjqGc5u9db0nRfgChfNsCdG.",
-      "password": "admin",
-      "displayName": "Паша"
-    },
-    {
-      "id": "admin1",
-      "passwordHash": "$2b$10$XBxjVqPwWlZBuag2qXUDhePgyF1iu4ivmeDSw7/MQqS8HiLE8bZgq",
-      "displayName": "admin1"
-    },
-    {
-      "id": "admin2",
-      "passwordHash": "$2b$10$kLLQEXY0qtmQPZz2OrGgD.upZChRvR9/BeUTg0/3aSVI1qbPqldPu",
-      "displayName": "admin2"
+      "id": "admin",
+      "displayName": "Main Admin",
+      "passwordHash": "$2b$12$Ul1FnB8LsMQkDIvVDp8hTOl72Z/N.r6CDjxcFZg5F3U2O9xRPVCYK"
     }
   ]
 }

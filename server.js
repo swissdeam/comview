@@ -27,14 +27,22 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// === сессии ===
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// app.use('/api')
+
+// === сессии ===
 app.use(session({
-  secret: "watchparty-secret-key", // для продакшна - взять из env
+  name: "curok.sid",
+  secret: process.env.SESSION_SECRET || "CHANGE_ME_IN_PROD",
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // локально; на https: true
+  cookie: {
+    httpOnly: true,
+    secure: true,        // ОБЯЗАТЕЛЬНО при HTTPS
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 6 // 6 часов
+  }
 }));
 // app.use(express.urlencoded({ extended: true }));
 // === статика ===
@@ -69,32 +77,92 @@ function writeAdmins(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
+
+(async () => {
+  const data = readAdmins();
+  if (!data.admins.find(a => a.id === "admin")) {
+    data.admins.push({
+      id: "admin",
+      displayName: "Main Admin",
+      passwordHash: await bcrypt.hash("admin", 12)
+    });
+    writeAdmins(data);
+    console.log("✅ Admin admin/admin created");
+  }
+})();
+
+
 // === middleware проверки админа ===
 function requireAdmin(req, res, next) {
-  if (req.session && req.session.isAdmin) return next();
-  return res.redirect("/admin_login.html");
+  console.log("рекваир")
+  console.log(req.session.isAdmin)
+  console.log(req.session.adminId)
+  if (req.session.isAdmin && req.session.adminId) return next();
+  return res.redirect("/login");
 }
 
 // === маршруты управления админами ===
-app.post("/login", async (req, res) => {
+app.post("/api/auth/login", async (req, res) => {
+  console.log("апи логин пост")
   const { login, password } = req.body;
+
+  if (!login || !password) {
+    console.log("апи логин пост отсутсвие логина")
+    return res.status(400).json({ error: "missing_credentials" });
+  }
+
   const data = readAdmins();
   const admin = data.admins.find(a => a.id === login);
-  if (!admin) return res.redirect("/admin_login.html?error=1");
+  console.log("data", data)
+  console.log("admin", admin)
+  console.log("admin", admin.id)
+
+  if (!admin) {
+    return res.status(401).json({ error: "invalid_credentials" });
+  }
+
   const ok = await bcrypt.compare(password, admin.passwordHash);
-  // const ok = await password == admin.password;
-  if (!ok) return res.redirect("/admin_login.html?error=1");
-  req.session.isAdmin = true;
-  req.session.adminId = admin.id;
-  res.redirect("/admin");
+  if (!ok) {
+    return res.status(401).json({ error: "invalid_credentials" });
+  }
+
+  // ⚠️ важно: регенерация сессии
+  req.session.regenerate(err => {
+    if (err) return res.status(500).json({ error: "session_error" });
+
+    req.session.isAdmin = true;
+    req.session.adminId = admin.id;
+    req.session.adminName = admin.displayName;
+
+    return res.redirect("/admin");
+    
+  });
+  
 });
+
+
+// app.post("/api/auth/login", async (req, res) => {
+//   const { login, password } = req.body;
+//   const data = readAdmins();
+//   const admin = data.admins.find(a => a.id === login);
+//   if (!admin) return res.redirect("/admin_login.html?error=1");
+//   const ok = await bcrypt.compare(password, admin.passwordHash);
+//   // const ok = await password == admin.password;
+//   if (!ok) return res.redirect("/admin_login.html?error=1");
+//   req.session.isAdmin = true;
+//   req.session.adminId = admin.id;
+//   res.redirect("/admin");
+// });
 
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
+  res.sendFile(path.join(__dirname, "public", "admin_login.html"));
 });
 
-app.post("/logout", (req, res) => {
-  req.session.destroy(() => res.redirect("/"));
+app.post("/api/auth/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.clearCookie("curok.sid");
+    return res.redirect("/")
+  });
 });
 
 // API: список админов (GET) и управление (POST/DELETE)
@@ -155,11 +223,10 @@ app.get("/", (req, res) => {
 
 // === сокеты: синхронизация ===
 io.on("connection", socket => {
-  // track viewer count
-  if (socket.handshake.query && socket.handshake.query.role === "admin") {
+  if (socket.isAdmin) {
     adminSocketId = socket.id;
   } else {
-    streamMeta.viewers = (streamMeta.viewers || 0) + 1;
+    streamMeta.viewers++;
     io.emit("meta-updated", streamMeta);
   }
 
@@ -168,6 +235,7 @@ io.on("connection", socket => {
 
   // админские события (только от admin socket)
   socket.on("admin-register", () => {
+    if (!socket.isAdmin) return;
     adminSocketId = socket.id;
   });
 
